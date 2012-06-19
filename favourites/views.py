@@ -39,7 +39,7 @@ def favourites_list(request, list_pk):
     lst = get_object_or_404(FavouritesList, pk=list_pk)
     
     if not lst.can_user_view(request.user):
-        raise Http404
+        return HttpResponseRedirect('/')
         
     context = RequestContext(request)
     context['list'] = lst
