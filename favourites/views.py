@@ -4,10 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-from models import FavouritesList, FavouriteItem
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-from forms import FavouritesListForm
+
+from .models import FavouritesList, FavouriteItem
+from .forms import FavouritesListForm
+from .settings import settings as favourites_settings
+
 
 @login_required
 def my_lists(request):
@@ -39,7 +42,10 @@ def favourites_list(request, list_pk):
     lst = get_object_or_404(FavouritesList, pk=list_pk)
     
     if not lst.can_user_view(request.user):
-        return HttpResponseRedirect('/')
+        if favourites_settings['FAVOURITES_REDIRECT_IF_NO_PERMISSION']:
+            return HttpResponseRedirect(favourites_settings['FAVOURITES_REDIRECT_IF_NO_PERMISSION'])
+        else:
+            raise Http404
         
     context = RequestContext(request)
     context['list'] = lst
