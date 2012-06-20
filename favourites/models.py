@@ -367,9 +367,12 @@ def _create_default_collection(sender, instance, created, **kwargs):
     x instance - user instance
     """
     creator = instance
-    if created:
+    if created and instance._state.db == 'default':
         userstring = creator.first_name if creator.first_name else creator.username
-        l = FavouritesList.objects.create(creator = creator, title=settings.DEFAULT_FAVOURITES_LIST_NAME % {'user': userstring })
+        FavouritesList.objects.create(
+            creator=creator,
+            title=settings.DEFAULT_FAVOURITES_LIST_NAME % {'user': userstring }
+        )
 
 class FavouritesListException(Exception):
     pass
