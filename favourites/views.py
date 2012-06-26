@@ -7,6 +7,11 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
+try:
+    from utils.collection_csv_exporter import CollectionCSVExporter
+except ImportError:
+    pass
+
 from .models import FavouritesList, FavouriteItem
 from .forms import FavouritesListForm
 from .settings import settings as favourites_settings
@@ -143,6 +148,26 @@ def edit_favourites_list(request, list_pk):
     context['form'] = form
     context['list'] = lst
     return render_to_response("favourites/edit_list.html", context)
+
+@login_required
+def export_favourites_list(request, list_pk):
+    def get_object(obj):
+        """
+        Returns :obj's corresponding model instance, assuming :obj is a favourites.FavouriteItem instance
+        """
+        obj = obj.item
+        if hasattr(obj, 'mobject'):
+            obj = obj.mobject
+        if hasattr(obj, '__call__'):
+            obj = obj()
+        return obj
+
+    lst = map(
+        get_object,
+        get_object_or_404(FavouritesList, pk=list_pk),
+    )
+    
+    return CollectionCSVExporter(lst).create_response()
 
 @login_required
 def delete_favourites_list(request, list_pk):

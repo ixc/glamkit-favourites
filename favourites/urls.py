@@ -11,7 +11,8 @@ urlpatterns = patterns('favourites.views',
     url(r'^(?P<list_pk>\d+)/$', 'favourites_list', name='favourites.list'), #username is ignored in URL
     url(r'^(?P<list_pk>\d+)/edit/$', 'edit_favourites_list', name='favourites.edit_list'),
     url(r'^(?P<list_pk>\d+)/delete/$', 'delete_favourites_list', name='favourites.delete_list'),
-    
+    url(r'^(?P<list_pk>\d+)/export/$', 'export_favourites_list', name='favourites.export_list'),
+
     #create list item (params are passed in in POST)
     url(r'^item/create/$', 'create_favourites_item', name='favourites.create_item'),
 
